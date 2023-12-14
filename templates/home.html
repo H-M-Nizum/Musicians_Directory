@@ -25,7 +25,11 @@
             {% for i in data %}
                 <tr>
                     <th scope="row">{{i.id}}</th>
+                    {% if request.user.is_authenticated %}
                     <td><a style="text-decoration: none;" href="{% url 'edit_musician' i.id %}">{{i.musician}}</a> </td>
+                    {% else %}
+                    <td>{{i.musician}}</td>
+                    {% endif %}
                     <td>{{i.musician.email}}</td>
                     <td>{{i.Rating}}</td>
                     <td>{{i.musician.instrument_type}}</td>
