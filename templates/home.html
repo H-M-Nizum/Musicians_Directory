@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home page{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <h1>This is Home page</h1>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Musician Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Album Rating</th>
+            <th scope="col">Instrument Type</th>
+            <th scope="col">Album Name</th>
+            <th scope="col">Release Date</th>
+            {% if request.user.is_authenticated %}
+            <th scope="col">Actions</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+            {% for i in data %}
+                <tr>
+                    <th scope="row">{{i.id}}</th>
+                    <td><a style="text-decoration: none;" href="{% url 'edit_musician' i.id %}">{{i.musician}}</a> </td>
+                    <td>{{i.musician.email}}</td>
+                    <td>{{i.Rating}}</td>
+                    <td>{{i.musician.instrument_type}}</td>
+                    <td>{{i.Album_name}}</td>
+                    <td>{{i.Release_date}}</td>
+                    {% if request.user.is_authenticated %}
+                    <td>
+                        <a class="btn btn-warning" href="{% url 'edit_album' i.id %}">Edit</a>
+                        <a class="btn btn-danger" href="{% url 'delete_album' i.id %}">Delete</a>
+                    </td>
+                    {% endif %}
+                    
+                </tr>
+            {% endfor %} 
+        </tbody>
+      </table>
+
+</div>>
+
+
+
+
+{% endblock content %}
