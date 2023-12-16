@@ -4,6 +4,9 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
+
 from musician.models import Musician
 # Create your views here.
 def register(request):
@@ -19,34 +22,31 @@ def register(request):
     return render(request, 'register.html', {'form': register_form, 'type': 'register'})
 
 
-def user_login(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, request.POST)
-        if form.is_valid():
-           user_name = form.cleaned_data['username']
-           user_pass = form.cleaned_data['password']
-           user = authenticate(username = user_name, password=user_pass)
-           
-           if user is not None:
-               messages.success(request, 'Loged in successfully')
-               login(request, user)
-               return redirect('home')
-           
-           
-           else:
-                messages.warning(request, 'login information incorrect')
-                return redirect('user_login')
-            
-        else:
-            messages.warning(request, 'not a valid user')
-            return redirect('home')
-            
-    else:
-        form = AuthenticationForm()
-        return render(request, 'register.html', {'form': form, 'type': 'Login'})
-   
 
-@login_required
-def user_logout(request):
-    logout(request)
-    return redirect('user_login')
+class user_login_view(LoginView):
+    template_name = 'register.html'
+    # success_url = reverse_lazy('user_profile')
+    
+    def get_success_url(self):
+        return reverse_lazy('home')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'User login successfully')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.success(self.request, 'User login information is incorrect')
+        return super().form_invalid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["type"] = 'Login'
+        return context
+    
+
+
+
+# class base user logout
+class user_logout_view(LogoutView):
+    def get_success_url(self):
+        return reverse_lazy('user_login')
